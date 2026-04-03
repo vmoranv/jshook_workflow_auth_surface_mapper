@@ -30,7 +30,7 @@ export default createWorkflow(workflowId, 'Auth Surface Mapper')
       .tool('navigate', 'page_navigate', { input: { url, waitUntil } })
 
       // Phase 2: Parallel Surface Collection
-      .parallel('collect-auth-surfaces', (p) => {
+      .parallel('collect-auth-surfaces', (p: any) => {
         p.maxConcurrency(maxConcurrency)
           .failFast(false)
           .tool('get-cookies', 'page_get_cookies')
@@ -72,11 +72,9 @@ export default createWorkflow(workflowId, 'Auth Surface Mapper')
           metadata: { url, workflowId },
         },
       })
-      .tool('record-artifact', 'instrumentation_artifact_record', {
+      .tool('record-summary', 'console_execute', {
         input: {
-          type: 'auth_surface_report',
-          label: `Auth surface analysis for ${url}`,
-          metadata: { url, minConfidence, requestTail },
+          expression: `(${JSON.stringify({ status: 'auth_surface_recorded', url, minConfidence })})`,
         },
       })
 
